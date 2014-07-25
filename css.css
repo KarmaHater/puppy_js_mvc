@@ -19,6 +19,7 @@ button {
 }
 
 div {
-  font-size: 25px;
-  color: red;
+  font-size: 30px;
+  color: pink;
+  text-shadow: 1px 1px black;
 }
