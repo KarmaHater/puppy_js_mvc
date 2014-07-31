@@ -1,37 +1,80 @@
 $(document).ready( function(){
-  $('.bark').on('click', my_dog.bark)
-  $('.buy').on('click', my_dog.buy)
-  $('.move').on('click', my_dog.move)
-  $('.die').on('click', my_dog.die)
+  initailzie()
 })
 
-function removeWords(){
-  $('p').remove()
+function initailzie(){
+  var my_dog = new Dog('http://www.justpuppies.net/images/maltishon3758.jpg')
+  var my_view = new View($('.dogBark'), $('.dogImg') )
+  my_controller = new Controller(my_view, my_dog)
+  bindEvent(my_controller)
 }
 
-var my_dog = new Dog('http://www.justpuppies.net/images/maltishon3758.jpg')
-
-function Dog(img){
-  this.location = 0
-  this.img = img;
-  ///add image sorce here
+function bindEvent(controller){
+  $('.bark').on('click', my_controller.dogBark.bind(controller))
+  $('.buy').on('click', my_controller.displayDog.bind(my_controller))
+  $('.move').on('click', my_controller.moveDogImages.bind(my_controller))
+  $('.die').on('click', my_controller.killDog.bind(my_controller))
 }
 
-Dog.prototype.bark = function() {
-  $('.dogBark').append('<p>Woof!</p>')
-};
-
-Dog.prototype.buy = function() {
-  $('.dogImg').append("<img src='http://www.justpuppies.net/images/maltishon3758.jpg'>")
-    removeWords()
-};
-
-Dog.prototype.move = function(){
-  $('img').css('float',"right");
+function Dog(img) {
+  this.img = img
+  this.died = false
 }
 
-Dog.prototype.die = function(){
-  removeWords()
-  $('img').remove()
-  $('.dogBark').append('<p>Your dog is died!</p>')
+Dog.prototype = {
+  bark: function() {
+    return "Woof!"
+  },
+  die:function() {
+    return "Your dog is died!"
+  }
+}
+
+function View(barkDiv, imageDiv) {
+ this.barkDiv = barkDiv
+ this.imageDiv = imageDiv
+}
+
+View.prototype = {
+  displayText: function(text, div) {
+    div.append($('<p>').text(text))
+  },
+  displayImg: function(img, div) {
+    div.append($('<img>').attr('src', img))
+  },
+  moveImg: function(){
+    $('img').css('float',"right")
+  },
+  removeText: function(){
+    $('p').remove()
+    $('img').remove()
+  }
+}
+
+function Controller(view, dog) {
+  this.view = view
+  this.dog = dog
+}
+
+Controller.prototype = {
+  dogBark: function(){
+    var text = this.dog.bark()
+    var textDiv = this.view.barkDiv
+    this.view.displayText(text, textDiv)
+  },
+  displayDog: function() {
+    var image = this.dog.img
+    var div = this.view.imageDiv
+    this.view.displayImg(image, div)
+  },
+  moveDogImages: function() {
+    this.view.moveImg()
+  },
+  killDog: function() {
+    this.dog.died = true
+    this.view.removeText()
+    var text = this.dog.die()
+    var div = this.view.barkDiv
+    this.view.displayText(text, div)
+  }
 }
